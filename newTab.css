@@ -1,0 +1,253 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Audiowide&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  background: url("default.jpg");
+  background-size: cover;
+  background-position: center;
+  color: white;
+}
+
+#overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(1px);
+}
+
+#particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.main {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date-clock-box {
+  position: absolute;
+  right: 15%;
+  top: 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock {
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  font-family: "Orbitron", sans-serif;
+  text-decoration: underline;
+}
+
+.date {
+  font-size: 80px;
+  opacity: 0.8;
+  font-family: "Orbitron", sans-serif;
+  transform: scaleY(1.5);
+}
+
+.month {
+  font-size: 15px;
+  font-weight: bold;
+  font-family: "Audiowide", sans-serif;
+}
+
+.weekDay {
+  font-size: 40px;
+  color: rgb(255, 171, 185);
+  font-family: "Audiowide", sans-serif;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.container {
+  width: 50%;
+  height: 100%;
+}
+
+.left-container {
+  display: flex;
+  align-items: end;
+  padding: 10px;
+}
+
+.music-player {
+  width: 220px;
+  padding: 5px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-family: sans-serif;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-btn,
+.play-btn {
+  border: none;
+  cursor: pointer;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.control-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.play-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 16px;
+}
+
+.control-btn:hover,
+.play-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.song-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.song-title {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.progress {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+}
+
+.right-container {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding: 10px;
+}
+
+.shortcuts {
+  width: 100%;
+  height: 100%;
+}
+
+.shortcut {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.shortcut:hover {
+  transform: translateY(-5px);
+}
+
+.shortcut span {
+  display: block;
+  margin-top: 10px;
+}
+
+.edit-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  backdrop-filter: blur(1px);
+  background-color: rgba(222, 222, 222, 0.237);
+  color: white;
+  font-weight: bold;
+  z-index: 5;
+}
+
+.panel {
+  position: absolute;
+  right: 20px;
+  top: 70px;
+  width: 350px;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(15px);
+  display: none;
+  z-index: 5;
+}
+
+.panel.active {
+  display: block;
+}
+
+.panel h3 {
+  margin-bottom: 15px;
+}
+
+.panel input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.panel button {
+  padding: 10px;
+  width: 100%;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.add-shortcut {
+  margin-top: 15px;
+}
+
+canvas {
+  position: absolute;
+  inset: 0;
+}

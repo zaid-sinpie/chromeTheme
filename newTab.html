@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+
+    <title>Anime New Tab</title>
+    <link rel="stylesheet" href="newTab.css" />
+  </head>
+
+  <body>
+    <div id="overlay"></div>
+
+    <canvas id="particles"></canvas>
+
+    <button class="edit-btn">⚙ Customize</button>
+
+    <div class="panel">
+      <h3>Wallpaper</h3>
+
+      <input type="file" id="bgUpload" />
+
+      <hr />
+
+      <div class="add-shortcut">
+        <h3>Add Shortcut</h3>
+
+        <input id="name" placeholder="Name" />
+
+        <input id="url" placeholder="https://" />
+
+        <button id="saveShortcut">Add Shortcut</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="date-clock-box">
+        <div class="date"></div>
+        <div class="clock"></div>
+        <!-- <div class="month"></div> -->
+        <div class="weekDay">Saturday</div>
+      </div>
+      <div class="left-container container">
+        <div class="music-player">
+          <div class="song-info">
+            <span class="song-title">Rem's Theme</span>
+          </div>
+          <div class="controls">
+            <button class="control-btn">⏮</button>
+            <button class="play-btn">▶</button>
+            <button class="control-btn">⏭</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-container container">
+        <div class=""></div>
+      </div>
+    </div>
+
+    <script src="newTab.js"></script>
+    <script src="music.js"></script>
+  </body>
+</html>
