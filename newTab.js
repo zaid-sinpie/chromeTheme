@@ -152,6 +152,12 @@ function togglePanel() {
   panel.classList.toggle("active");
 }
 
+function removePanel(e) {
+  if (e.key === "Escape") {
+    panel.classList.remove("active");
+  }
+}
+
 function handleBackgroundUpload(event) {
   const file = event.target.files[0];
 
@@ -305,6 +311,7 @@ function initializeApp() {
 window.addEventListener("resize", resizeCanvas);
 
 editBtn.addEventListener("click", togglePanel);
+document.addEventListener("keydown", removePanel);
 
 backgroundUploadBtn.addEventListener("change", handleBackgroundUpload);
 
