@@ -165,6 +165,29 @@ function handleBackgroundRead(event) {
   setBackground(event.target.result);
 }
 
+function handleAddShortcut() {
+  const name = shortcutName.value.trim();
+  const url = shortcutLink.value.trim();
+
+  if (!name || !url) return;
+
+  chrome.bookmarks.getTree((tree) => {
+    const bookmarksBarId = tree[0].children.find(
+      (node) => node.title === "Bookmarks bar",
+    )?.id;
+
+    if (!bookmarksBarId) return;
+
+    chrome.bookmarks.create({
+      parentId: bookmarksBarId,
+      title: name,
+      url: url,
+    });
+  });
+  shortcutName.value = "";
+  shortcutLink.value = "";
+}
+
 function startClock() {
   updateTime();
   setInterval(updateTime, 1000);
@@ -196,5 +219,7 @@ window.addEventListener("resize", resizeCanvas);
 editBtn.addEventListener("click", togglePanel);
 
 backgroundUploadBtn.addEventListener("change", handleBackgroundUpload);
+
+addShortcut.addEventListener("click", handleAddShortcut);
 
 initializeApp();
