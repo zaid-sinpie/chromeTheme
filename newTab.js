@@ -1,11 +1,23 @@
 const clock = document.querySelector(".clock");
 const dateEl = document.querySelector(".date");
 const weekDay = document.querySelector(".weekDay");
-// const month = document.querySelector(".month");
+const leftContainer = document.querySelector(".left-container");
+
+const addShortcut = document.querySelector("#saveShortcut");
+const shortcutName = document.querySelector("#name");
+const shortcutLink = document.querySelector("#url");
+
+const editBtn = document.querySelector(".edit-btn");
+const backgroundUploadBtn = document.getElementById("bgUpload");
+const panel = document.querySelector(".panel");
+
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+const particles = [];
 
 function formatDate(dateString) {
-  const dateArray = dateString.split(" ");
-  return dateArray;
+  return dateString.split(" ");
 }
 
 function updateTime() {
@@ -18,24 +30,12 @@ function updateTime() {
 
   const dateArray = formatDate(now.toDateString());
 
-  const weekday = formatDate(
-    now.toLocaleDateString("en-US", {
-      weekday: "long",
-    }),
-  );
+  weekDay.textContent = now.toLocaleDateString("en-US", {
+    weekday: "long",
+  });
+
   dateEl.textContent = dateArray[2];
-  // month.textContent = dateArray[1];
-  weekDay.textContent = weekday;
 }
-
-setInterval(updateTime, 1000);
-updateTime();
-
-const panel = document.querySelector(".panel");
-
-document.querySelector(".edit-btn").addEventListener("click", () => {
-  panel.classList.toggle("active");
-});
 
 function setBackground(src) {
   document.body.style.backgroundImage = `url(${src})`;
@@ -47,121 +47,154 @@ function setBackground(src) {
   extractTheme(src);
 }
 
-chrome.storage.local.get(["wallpaper"], (data) => {
-  if (data.wallpaper) {
-    document.body.style.backgroundImage = `url(${data.wallpaper})`;
+function loadStoredWallpaper(data) {
+  if (!data.wallpaper) return;
 
-    extractTheme(data.wallpaper);
-  }
-});
+  document.body.style.backgroundImage = `url(${data.wallpaper})`;
 
-document.getElementById("bgUpload").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    setBackground(reader.result);
-  };
-
-  reader.readAsDataURL(file);
-});
+  extractTheme(data.wallpaper);
+}
 
 function extractTheme(src) {
   const img = new Image();
 
   img.crossOrigin = "anonymous";
-
-  img.onload = () => {
-    const canvas = document.createElement("canvas");
-
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = 50;
-    canvas.height = 50;
-
-    ctx.drawImage(img, 0, 0, 50, 50);
-
-    const pixels = ctx.getImageData(0, 0, 50, 50).data;
-
-    let r = 0,
-      g = 0,
-      b = 0,
-      count = 0;
-
-    for (let i = 0; i < pixels.length; i += 4) {
-      r += pixels[i];
-      g += pixels[i + 1];
-      b += pixels[i + 2];
-
-      count++;
-    }
-
-    r = Math.floor(r / count);
-    g = Math.floor(g / count);
-    b = Math.floor(b / count);
-
-    const color = `rgb(${r},${g},${b})`;
-
-    document.documentElement.style.setProperty("--accent", color);
-  };
+  img.onload = handleImageLoad.bind(null, img);
 
   img.src = src;
 }
 
-extractTheme("default.jpg");
+function handleImageLoad(img) {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
 
-const canvas = document.getElementById("particles");
+  canvas.width = 50;
+  canvas.height = 50;
 
-const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, 50, 50);
 
-function resize() {
+  const pixels = ctx.getImageData(0, 0, 50, 50).data;
+
+  let r = 0;
+  let g = 0;
+  let b = 0;
+  let count = 0;
+
+  for (let i = 0; i < pixels.length; i += 4) {
+    r += pixels[i];
+    g += pixels[i + 1];
+    b += pixels[i + 2];
+    count++;
+  }
+
+  r = Math.floor(r / count);
+  g = Math.floor(g / count);
+  b = Math.floor(b / count);
+
+  const color = `rgb(${r}, ${g}, ${b})`;
+
+  document.documentElement.style.setProperty("--accent", color);
+}
+
+function resizeCanvas() {
   canvas.width = window.innerWidth;
-
   canvas.height = window.innerHeight;
 }
 
-resize();
+function createParticles() {
+  particles.length = 0;
 
-window.addEventListener("resize", resize);
-
-const particles = [];
-
-for (let i = 0; i < 100; i++) {
-  particles.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-
-    r: Math.random() * 2 + 1,
-
-    dx: (Math.random() - 0.5) * 0.5,
-    dy: (Math.random() - 0.5) * 0.5,
-  });
+  for (let i = 0; i < 100; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 1,
+      dx: (Math.random() - 0.5) * 0.5,
+      dy: (Math.random() - 0.5) * 0.5,
+    });
+  }
 }
 
-function animate() {
+function drawParticle(particle) {
+  ctx.beginPath();
+
+  ctx.arc(particle.x, particle.y, particle.r, 0, Math.PI * 2);
+
+  ctx.fillStyle = "rgba(255,255,255,.5)";
+  ctx.fill();
+}
+
+function updateParticle(particle) {
+  particle.x += particle.dx;
+  particle.y += particle.dy;
+
+  if (particle.x < 0 || particle.x > canvas.width) {
+    particle.dx *= -1;
+  }
+
+  if (particle.y < 0 || particle.y > canvas.height) {
+    particle.dy *= -1;
+  }
+}
+
+function animateParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  particles.forEach((p) => {
-    p.x += p.dx;
-    p.y += p.dy;
+  particles.forEach(updateParticle);
+  particles.forEach(drawParticle);
 
-    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-
-    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-
-    ctx.beginPath();
-
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-
-    ctx.fillStyle = "rgba(255,255,255,.5)";
-
-    ctx.fill();
-  });
-
-  requestAnimationFrame(animate);
+  requestAnimationFrame(animateParticles);
 }
 
-animate();
+function togglePanel() {
+  panel.classList.toggle("active");
+}
+
+function handleBackgroundUpload(event) {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = handleBackgroundRead;
+  reader.readAsDataURL(file);
+}
+
+function handleBackgroundRead(event) {
+  setBackground(event.target.result);
+}
+
+function startClock() {
+  updateTime();
+  setInterval(updateTime, 1000);
+}
+
+function initializeWallpaper() {
+  chrome.storage.local.get(["wallpaper"], loadStoredWallpaper);
+}
+
+function initializeTheme() {
+  extractTheme("default.jpg");
+}
+
+function initializeParticles() {
+  resizeCanvas();
+  createParticles();
+  animateParticles();
+}
+
+function initializeApp() {
+  startClock();
+  initializeWallpaper();
+  initializeTheme();
+  initializeParticles();
+}
+
+window.addEventListener("resize", resizeCanvas);
+
+editBtn.addEventListener("click", togglePanel);
+
+backgroundUploadBtn.addEventListener("change", handleBackgroundUpload);
+
+initializeApp();

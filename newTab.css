@@ -1,5 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Audiowide&display=swap");
+@font-face {
+  font-family: "Orbitron";
+  src: url("./fonts/Orbitron-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Audiowide";
+  src: url("./fonts/Audiowide-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
 
 * {
   margin: 0;
@@ -86,8 +97,63 @@ body {
 
 .left-container {
   display: flex;
-  align-items: end;
+  flex-direction: column;
+  justify-content: end;
+  gap: 20px;
+  align-items: start;
   padding: 10px;
+}
+
+.shortcuts-container {
+  height: 70%;
+  width: auto;
+  border-radius: 6px;
+  padding: 5px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(24, 24, 24, 0.541);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.461);
+}
+
+.shortcut {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.shortcut:hover {
+  transform: translateY(-2px);
 }
 
 .music-player {
@@ -169,31 +235,6 @@ body {
   padding: 10px;
 }
 
-.shortcuts {
-  width: 100%;
-  height: 100%;
-}
-
-.shortcut {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 15px;
-  cursor: pointer;
-  transition: 0.3s;
-  text-align: center;
-}
-
-.shortcut:hover {
-  transform: translateY(-5px);
-}
-
-.shortcut span {
-  display: block;
-  margin-top: 10px;
-}
-
 .edit-btn {
   position: absolute;
   top: 20px;
@@ -241,10 +282,6 @@ body {
   width: 100%;
   margin-top: 10px;
   cursor: pointer;
-}
-
-.add-shortcut {
-  margin-top: 15px;
 }
 
 canvas {
