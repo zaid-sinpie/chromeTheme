@@ -145,8 +145,8 @@ body {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 15px;
+  border-radius: 100%;
+  padding: 8px 10px;
   cursor: pointer;
   transition: 0.3s;
   text-align: center;
@@ -287,4 +287,8 @@ body {
 canvas {
   position: absolute;
   inset: 0;
+}
+
+.hidden{
+  display: none;
 }

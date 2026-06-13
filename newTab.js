@@ -11,6 +11,8 @@ const editBtn = document.querySelector(".edit-btn");
 const backgroundUploadBtn = document.getElementById("bgUpload");
 const panel = document.querySelector(".panel");
 
+const shotcutsContainer = document.querySelector(".shortcuts-container");
+
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
 
@@ -165,6 +167,39 @@ function handleBackgroundRead(event) {
   setBackground(event.target.result);
 }
 
+function getFavicon(url) {
+  const domain = new URL(url).hostname;
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+}
+
+function addShortcutToUI(bookmark) {
+  const shortcut = document.createElement("a");
+
+  shortcut.href = bookmark.url;
+  shortcut.className = "shortcut";
+  shortcut.id = bookmark.id;
+  shortcut.target = "_blank";
+  shortcut.title = bookmark.title;
+
+  const favicon = document.createElement("img");
+
+  favicon.src = `/_favicon/?pageUrl=${encodeURIComponent(
+    bookmark.url,
+  )}&size=64`;
+
+  favicon.onerror = () => {
+    favicon.src = getFavicon(bookmark.url);
+  };
+
+  favicon.width = 16;
+  favicon.height = 16;
+  favicon.alt = bookmark.title;
+
+  shortcut.appendChild(favicon);
+
+  shotcutsContainer.appendChild(shortcut);
+}
+
 function handleAddShortcut() {
   const name = shortcutName.value.trim();
   const url = shortcutLink.value.trim();
@@ -176,16 +211,69 @@ function handleAddShortcut() {
       (node) => node.title === "Bookmarks bar",
     )?.id;
 
-    if (!bookmarksBarId) return;
+    if (!bookmarksBarId) {
+      console.error("Bookmarks Bar not found");
+      return;
+    }
 
-    chrome.bookmarks.create({
-      parentId: bookmarksBarId,
-      title: name,
-      url: url,
+    chrome.bookmarks.create(
+      {
+        parentId: bookmarksBarId,
+        title: name,
+        url: url,
+      },
+      (bookmark) => {
+        addShortcutToUI(bookmark);
+
+        shortcutName.value = "";
+        shortcutLink.value = "";
+      },
+    );
+
+    shotcutsContainer.classList.remove("hidden");
+  });
+}
+
+function loadBookmarks() {
+  chrome.bookmarks.getTree((tree) => {
+    const bookmarksBar = tree[0].children.find(
+      (node) => node.title === "Bookmarks bar",
+    );
+
+    if (bookmarksBar.children.length === 0) {
+      shotcutsContainer.classList.add("hidden");
+      return;
+    }
+
+    shotcutsContainer.innerHTML = "";
+
+    bookmarksBar.children.forEach((bookmark) => {
+      if (bookmark.url) {
+        addShortcutToUI(bookmark);
+      }
     });
   });
-  shortcutName.value = "";
-  shortcutLink.value = "";
+}
+
+function handleBookmarkCreated(id, bookmark) {
+  shotcutsContainer.classList.remove("hidden");
+
+  addShortcutToUI({
+    ...bookmark,
+    id,
+  });
+}
+
+function handleBookmarRemove(id, removeInfo) {
+  const shortcut = document.getElementById(id);
+
+  if (shortcut) {
+    shortcut.remove();
+  }
+
+  if (shotcutsContainer.children.length === 0) {
+    shotcutsContainer.classList.add("hidden");
+  }
 }
 
 function startClock() {
@@ -221,5 +309,10 @@ editBtn.addEventListener("click", togglePanel);
 backgroundUploadBtn.addEventListener("change", handleBackgroundUpload);
 
 addShortcut.addEventListener("click", handleAddShortcut);
+
+document.addEventListener("DOMContentLoaded", loadBookmarks);
+
+chrome.bookmarks.onRemoved.addListener(handleBookmarRemove);
+chrome.bookmarks.onCreated.addListener(handleBookmarkCreated);
 
 initializeApp();
