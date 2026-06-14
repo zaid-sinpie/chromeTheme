@@ -261,10 +261,13 @@ body {
   backdrop-filter: blur(15px);
   display: none;
   z-index: 5;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .panel.active {
-  display: block;
+  display: flex;
 }
 
 .panel h3 {
@@ -298,6 +301,40 @@ body {
 #bgUpload::file-selector-button:hover {
   transform: translateY(-1px);
   background: rgba(255, 255, 255, 0.2);
+}
+
+.particleColorSelector {
+  width: 100%;
+  height: 48px;
+  padding: 5px;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.particleColorSelector::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.particleColorSelector::-webkit-color-swatch {
+  border: none;
+  border-radius: 12px;
+}
+
+.particleColorSelector::-moz-color-swatch {
+  border: none;
+  border-radius: 12px;
 }
 
 .panel input {
