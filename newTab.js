@@ -229,8 +229,6 @@ function handleAddShortcut() {
         url: url,
       },
       (bookmark) => {
-        addShortcutToUI(bookmark);
-
         shortcutName.value = "";
         shortcutLink.value = "";
       },
