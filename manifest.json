@@ -15,8 +15,5 @@
       "resources": ["default.jpg"],
       "matches": ["<all_urls>"]
     }
-  ],
-  "background": {
-    "service_worker": "background.js"
-  }
+  ]
 }
