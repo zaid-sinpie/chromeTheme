@@ -15,8 +15,10 @@ const shotcutsContainer = document.querySelector(".shortcuts-container");
 
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
+const particleColorSelector = document.querySelector(".particleColorSelector");
 
 const particles = [];
+let particleColor = "rgba(255,255,255,.5)";
 
 function formatDate(dateString) {
   return dateString.split(" ");
@@ -122,7 +124,7 @@ function drawParticle(particle) {
 
   ctx.arc(particle.x, particle.y, particle.r, 0, Math.PI * 2);
 
-  ctx.fillStyle = "rgba(255,255,255,.5)";
+  ctx.fillStyle = particleColor;
   ctx.fill();
 }
 
@@ -162,6 +164,14 @@ function handleBackgroundUpload(event) {
   const file = event.target.files[0];
 
   if (!file) return;
+
+  const maxSize = 2 * 1024 * 1024;
+
+  if (file.size > maxSize) {
+    alert("Please select an image smaller than 2 MB.");
+    event.target.value = "";
+    return;
+  }
 
   const reader = new FileReader();
 
@@ -285,6 +295,15 @@ function startClock() {
   setInterval(updateTime, 1000);
 }
 
+function initializeParticleColor() {
+  chrome.storage.local.get("particleColor", (result) => {
+    if (result.particleColor) {
+      particleColor = result.particleColor;
+      particleColorSelector.value = result.particleColor;
+    }
+  });
+}
+
 function initializeWallpaper() {
   chrome.storage.local.get(["wallpaper"], loadStoredWallpaper);
 }
@@ -297,6 +316,7 @@ function initializeParticles() {
   resizeCanvas();
   createParticles();
   animateParticles();
+  initializeParticleColor();
 }
 
 function initializeApp() {
@@ -305,6 +325,16 @@ function initializeApp() {
   initializeTheme();
   initializeParticles();
 }
+
+function particleColorChange(e) {
+  particleColor = e.target.value;
+
+  chrome.storage.local.set({
+    particleColor: particleColor,
+  });
+}
+
+particleColorSelector.addEventListener("change", particleColorChange);
 
 window.addEventListener("resize", resizeCanvas);
 
