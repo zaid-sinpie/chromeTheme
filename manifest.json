@@ -4,11 +4,13 @@
   "description": "Beautiful Anime Inspired New Tab",
   "version": "1.0",
 
-  "permissions": ["storage", "bookmarks", "favicon"],
+  "permissions": ["storage", "bookmarks", "favicon", "scripting"],
 
   "chrome_url_overrides": {
     "newtab": "newTab.html"
   },
+
+  "host_permissions": ["<all_urls>"],
 
   "web_accessible_resources": [
     {

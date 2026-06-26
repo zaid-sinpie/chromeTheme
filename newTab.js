@@ -20,6 +20,12 @@ const particleColorSelector = document.querySelector(".particleColorSelector");
 const particles = [];
 let particleColor = "rgba(255,255,255,.5)";
 
+let musicTabId = null;
+const playBtn = document.querySelector(".play-btn");
+const controlBtnLeft = document.querySelectorAll(".control-btn")[0];
+const controlBtnRight = document.querySelectorAll(".control-btn")[1];
+const title = document.querySelector(".song-title");
+
 function formatDate(dateString) {
   return dateString.split(" ");
 }
@@ -194,7 +200,6 @@ function addShortcutToUI(bookmark) {
   shortcut.href = bookmark.url;
   shortcut.className = "shortcut";
   shortcut.id = bookmark.id;
-  shortcut.target = "_blank";
   shortcut.title = bookmark.title;
 
   const favicon = document.createElement("img");
@@ -333,6 +338,124 @@ function particleColorChange(e) {
     particleColor: particleColor,
   });
 }
+
+function updateSongTitle() {
+  chrome.scripting.executeScript(
+    {
+      target: { tabId: musicTabId },
+      func: () => {
+        return document
+          .querySelector("yt-formatted-string.style-scope.ytd-watch-metadata")
+          ?.textContent?.trim();
+      },
+    },
+    ([result]) => {
+      if (!result?.result) return;
+
+      title.textContent = result.result;
+    },
+  );
+}
+
+async function openPlaylist(
+  url = "https://www.youtube.com/watch?v=zVvdjlgHAag&list=PLu761XO9d923AJCyGvwEnAaYcRboL8CSk",
+) {
+  const tabs = await chrome.tabs.query({});
+
+  const existingTab = tabs.find((tab) => {
+    return tab.url === url;
+  });
+
+  if (existingTab) {
+    musicTabId = existingTab.id;
+
+    if (!existingTab.pinned) {
+      chrome.tabs.update(existingTab.id, {
+        pinned: true,
+      });
+    }
+
+    return;
+  }
+
+  const tab = await chrome.tabs.create({
+    url,
+    active: false,
+    pinned: true,
+  });
+
+  musicTabId = tab.id;
+}
+
+function playPause() {
+  chrome.scripting.executeScript(
+    {
+      target: { tabId: musicTabId },
+      func: () => {
+        const video = document.querySelector("video");
+
+        if (!video) return null;
+
+        if (video.paused) {
+          video.play();
+          return true;
+        } else {
+          video.pause();
+          return false;
+        }
+      },
+    },
+    (results) => {
+      if (!results?.length) return;
+
+      const isPlaying = results[0].result;
+
+      playBtn.textContent = isPlaying ? "⏸" : "▶";
+
+      setTimeout(updateSongTitle, 2000);
+    },
+  );
+}
+
+function nextSong() {
+  chrome.scripting.executeScript({
+    target: { tabId: musicTabId },
+    func: () => {
+      document.querySelector(".ytp-next-button")?.click();
+    },
+  });
+
+  playBtn.textContent = "⏸";
+
+  setTimeout(updateSongTitle, 2000);
+}
+
+function previousSong() {
+  chrome.scripting.executeScript({
+    target: { tabId: musicTabId },
+    func: () => {
+      const current = document.querySelector(
+        "ytd-playlist-panel-video-renderer[selected]",
+      );
+
+      const previous = current?.previousElementSibling;
+
+      previous?.querySelector("a")?.click();
+    },
+  });
+
+  playBtn.textContent = "⏸";
+
+  setTimeout(updateSongTitle, 2000);
+}
+
+playBtn.addEventListener("click", playPause);
+
+controlBtnLeft.addEventListener("click", previousSong);
+
+controlBtnRight.addEventListener("click", nextSong);
+
+openPlaylist();
 
 particleColorSelector.addEventListener("change", particleColorChange);
 
