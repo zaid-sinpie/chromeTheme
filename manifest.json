@@ -1,13 +1,23 @@
 {
   "manifest_version": 3,
-  "name": "Anime New Tab",
-  "description": "Beautiful Anime Inspired New Tab",
-  "version": "1.0",
+  "name": "Otaku Tab",
+  "description": "Customize your new tab with wallpapers, shortcuts, widgets, and animations.",
+  "version": "1.0.0",
 
-  "permissions": ["storage", "bookmarks", "favicon"],
+  "permissions": [
+    "storage",
+    "bookmarks",
+    "favicon"
+  ],
 
   "chrome_url_overrides": {
     "newtab": "newTab.html"
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
 
   "web_accessible_resources": [
